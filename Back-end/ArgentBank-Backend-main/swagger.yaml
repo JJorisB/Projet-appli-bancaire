@@ -1,0 +1,294 @@
+swagger: "2.0"
+info:
+  title: Bank Argent API documentation
+  description: Contains all available API endpoints in this codebase
+  version: "1.0.0"
+  termsOfService: "http://swagger.io/terms/"
+host: localhost:3001
+basePath: /api/v1
+schemes:
+  - http
+paths:
+  /user/login:
+    post:
+      tags:
+        - User Module
+      summary: Login
+      description: API for Login
+      parameters:
+        - in: body
+          name: body
+          description: Login Payload
+          required: true
+          schema:
+            $ref: "#/definitions/Login"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Login Successfully
+          schema:
+            $ref: "#/definitions/LoginResponse"
+        "400":
+          description: Invalid Fields
+        "500":
+          description: Internal Server Error
+  /user/signup:
+    post:
+      tags:
+        - User Module
+      summary: Signup
+      description: API for Signup
+      parameters:
+        - in: body
+          name: body
+          description: Signup Payload
+          required: true
+          schema:
+            $ref: "#/definitions/User"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Signup Successfully
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        "400":
+          description: Invalid Fields
+        "500":
+          description: Internal Server Error
+  /user/profile:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - User Module
+      summary: User Profile API
+      description: API for fetching a user profile
+      #produces:
+      # - application/json
+      responses:
+        "200":
+          description: User profile retrieved successully
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        "400":
+          description: Invalid Fields
+        "500":
+          description: Internal Server Error
+    put:
+      security:
+        - Bearer: []
+      tags:
+        - User Module
+      summary: User Profile API
+      description: API for updating a user profile
+      parameters:
+        - in: body
+          name: body
+          description: Update user profile attributes
+          required: true
+          schema:
+            $ref: "#/definitions/UserProfile"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: User profile retrieved successully
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        "400":
+          description: Invalid Fields
+        "500":
+          description: Internal Server Error
+  /user/{userId}/accounts/transaction:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Transactions
+      summary: "Récupérer les transactions du mois en cours"
+      description: "Cet endpoint retourne les transactions de l'utilisateur authentifié pour le mois en cours, groupées par compte."
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          type: string
+          description: "L'ID de l'utilisateur pour lequel les transactions doivent être récupérées."
+      responses:
+        "200":
+          description: "Transactions récupérées avec succès"
+          schema:
+            type: object
+            properties:
+              accounts:
+                type: array
+                items:
+                  $ref: "#/definitions/UserTransactions"
+  /user/accounts/transaction/{transactionId}:
+    get:
+      tags:
+        - Détail de transaction
+      summary: "Récuperer le détail des transactions"
+      description: ""
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          type: string
+          description: "L'ID unique de la transaction pour laquelle les détails doivent être récupérés."
+      responses:
+        "200":
+          description: "Détails de la transaction récupérés avec succès."
+          schema:
+            type: object
+            properties:
+              transaction:
+                $ref: "#/definitions/UserTransactionsDetail"
+        "404":
+          description: "Transaction non trouvée."
+        "400":
+          description: "Non autorisé. Jeton d'authentification invalide ou manquant."
+        "500":
+          description: "Erreur interne du serveur."
+    put:
+      security:
+        - Bearer: []
+      tags:
+        - Trade Module
+      summary: Trade API
+      description: API for updating informations about transactions
+      parameters:
+        - in: body
+          name: body
+          description: Update user profile attributes
+          required: true
+          schema:
+            $ref: "#/definitions/UserTransactionsDetail"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: User profile retrieved successully
+          schema:
+            type: object
+            properties:
+              transaction:
+                $ref: "#/definitions/UserTransactionsDetail"
+        "400":
+          description: Invalid Fields
+        "500":
+          description: Internal Server Error
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+definitions:
+  User:
+    properties:
+      email:
+        type: string
+        description: user email
+      password:
+        type: string
+        description: user password
+      firstName:
+        type: string
+        description: user first name
+      lastName:
+        type: string
+        description: user last name
+      userName:
+        type: string
+        description: user public name
+  Login:
+    properties:
+      email:
+        type: string
+        description: user email
+      password:
+        type: string
+        description: user password
+  ApiResponse:
+    type: object
+    properties:
+      status:
+        type: integer
+      message:
+        type: string
+      body:
+        type: object
+        properties:
+          id:
+            type: string
+          email:
+            type: string
+  LoginResponse:
+    type: object
+    properties:
+      token:
+        type: string
+  UserProfile:
+    type: object
+    properties:
+      userName:
+        type: string
+  UserTransactions:
+    type: object
+    properties:
+      accountId:
+        type: string
+      transactionId:
+        type: string
+      amount:
+        type: number
+        format: float
+      date:
+        type: string
+        format: date
+      description:
+        type: string
+      category:
+        type: string
+  UserTransactionsDetail:
+    type: object
+    properties:
+      transactionId:
+        type: string
+        description: "L'identifiant unique de la transaction."
+      accountId:
+        type: string
+        description: "L'identifiant du compte bancaire associé à cette transaction."
+      date:
+        type: string
+        format: date-time
+        description: "La date et l'heure de la transaction."
+      description:
+        type: string
+        description: "La description ou le libellé de la transaction."
+      amount:
+        type: number
+        format: float
+        description: "Le montant de la transaction."
+      type:
+        type: string
+        enum: ["credit", "debit"]
+        description: "Le type de transaction : crédit ou débit."
+      balanceAfterTransaction:
+        type: number
+        format: float
+        description: "Le solde du compte après la transaction."
+      merchant:
+        type: string
+        description: "Le nom du marchand ou de l'entité impliquée dans la transaction."
+  UptadeTransactionsDetail:
+    type: object
+    properties:
+      category:
+        type: string
+        description: "Catégorie du paiement"
+      note:
+        type: string
+        description: "Note concernant le paiement"
