@@ -107,17 +107,17 @@ paths:
         - Bearer: []
       tags:
         - Transactions
-      summary: "Récupérer les transactions du mois en cours"
-      description: "Cet endpoint retourne les transactions de l'utilisateur authentifié pour le mois en cours, groupées par compte."
+      summary: "Retrieve transactions for the current month"
+      description: "This endpoint returns the transactions of the authenticated user for the current month, grouped by account."
       parameters:
         - name: userId
           in: path
           required: true
           type: string
-          description: "L'ID de l'utilisateur pour lequel les transactions doivent être récupérées."
+          description: "The user ID for which transactions are to be retrieved."
       responses:
         "200":
-          description: "Transactions récupérées avec succès"
+          description: "Transactions successfully recovered"
           schema:
             type: object
             properties:
@@ -128,29 +128,29 @@ paths:
   /user/accounts/transaction/{transactionId}:
     get:
       tags:
-        - Détail de transaction
-      summary: "Récuperer le détail des transactions"
-      description: ""
+        - Transaction details
+      summary: "Retrieve transaction details"
+      description: "Retrieves the transaction details of the logged-in user"
       parameters:
         - name: transactionId
           in: path
           required: true
           type: string
-          description: "L'ID unique de la transaction pour laquelle les détails doivent être récupérés."
+          description: "The unique ID of the transaction for which details are to be retrieved."
       responses:
         "200":
-          description: "Détails de la transaction récupérés avec succès."
+          description: "Details of transactions successfully recovered"
           schema:
             type: object
             properties:
               transaction:
                 $ref: "#/definitions/UserTransactionsDetail"
         "404":
-          description: "Transaction non trouvée."
+          description: "Transaction not found."
         "400":
-          description: "Non autorisé. Jeton d'authentification invalide ou manquant."
+          description: "Not allowed. Invalid or missing authentication token."
         "500":
-          description: "Erreur interne du serveur."
+          description: "Server internal error."
     put:
       security:
         - Bearer: []
@@ -257,38 +257,38 @@ definitions:
     properties:
       transactionId:
         type: string
-        description: "L'identifiant unique de la transaction."
+        description: "The unique identifier of the transaction."
       accountId:
         type: string
-        description: "L'identifiant du compte bancaire associé à cette transaction."
+        description: "The bank account identifier associated with this transaction."
       date:
         type: string
         format: date-time
-        description: "La date et l'heure de la transaction."
+        description: "The date and time of the transaction."
       description:
         type: string
-        description: "La description ou le libellé de la transaction."
+        description: "The description or label of the transaction."
       amount:
         type: number
         format: float
-        description: "Le montant de la transaction."
+        description: "The amount of the transaction."
       type:
         type: string
         enum: ["credit", "debit"]
-        description: "Le type de transaction : crédit ou débit."
+        description: "The type of transaction: credit or debit."
       balanceAfterTransaction:
         type: number
         format: float
-        description: "Le solde du compte après la transaction."
+        description: "The account balance after the transaction."
       merchant:
         type: string
-        description: "Le nom du marchand ou de l'entité impliquée dans la transaction."
+        description: "The name of the merchant or entity involved in the transaction."
   UptadeTransactionsDetail:
     type: object
     properties:
       category:
         type: string
-        description: "Catégorie du paiement"
+        description: "Payment category"
       note:
         type: string
-        description: "Note concernant le paiement"
+        description: "Note regarding payment"
